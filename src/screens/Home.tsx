@@ -52,21 +52,60 @@ export const Home: React.FC = () => {
             initial={{ scale: 0.5, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
             transition={{ type: "spring", stiffness: 100 }}
-            className="inline-block relative"
+            className="inline-block relative w-full"
           >
             <motion.div
               animate={{ y: [0, -15, 0], rotate: [0, 10, -10, 0] }}
               transition={{ repeat: Infinity, duration: 3, ease: "easeInOut" }}
-              className="absolute -top-4 -right-4 md:-top-6 md:-right-6 text-primary"
+              className="absolute -top-4 -right-4 md:-top-6 md:-right-6 text-primary z-20"
             >
               <Sparkles size={24} className="md:w-10 md:h-10" />
             </motion.div>
-            <h1 className="text-5xl md:text-8xl font-black font-rounded tracking-tighter text-transparent bg-clip-text bg-linear-to-r from-primary via-secondary to-accent drop-shadow-2xl py-2 md:py-4">
-              TinyTaleem
-            </h1>
-            <p className="text-lg md:text-2xl font-bold text-gray-400 font-modern tracking-widest uppercase opacity-80">
-              Learning is Playtime!
-            </p>
+
+            <div className="flex flex-col md:flex-row items-center justify-center gap-4 md:gap-8 px-4">
+              <motion.div
+                animate={{ rotate: [0, 5, -5, 0], y: [0, -5, 0] }}
+                transition={{ repeat: Infinity, duration: 4, ease: "easeInOut" }}
+                className="relative shrink-0"
+              >
+                <div className="w-20 h-20 md:w-32 md:h-32 rounded-full border-4 md:border-6 border-white shadow-2xl overflow-hidden bg-white">
+                  <img
+                    src="/assets/images/deer.jpeg"
+                    alt="Dheer"
+                    className="w-full h-full object-cover"
+                  />
+                </div>
+                <div className="absolute -bottom-2 -right-2 bg-yellow-400 text-white p-1 rounded-full shadow-lg">
+                  <Sparkles size={16} />
+                </div>
+              </motion.div>
+
+              <div className="text-center">
+                <h1 className="text-5xl md:text-8xl font-black font-rounded tracking-tighter text-transparent bg-clip-text bg-linear-to-r from-primary via-secondary to-accent drop-shadow-2xl py-2">
+                  TinyTaleem
+                </h1>
+                <p className="text-lg md:text-2xl font-bold text-gray-400 font-modern tracking-widest uppercase opacity-80">
+                  Learning is Playtime!
+                </p>
+              </div>
+
+              <motion.div
+                animate={{ rotate: [0, -5, 5, 0], y: [0, -5, 0] }}
+                transition={{ repeat: Infinity, duration: 4, ease: "easeInOut", delay: 0.5 }}
+                className="relative shrink-0"
+              >
+                <div className="w-20 h-20 md:w-32 md:h-32 rounded-full border-4 md:border-6 border-white shadow-2xl overflow-hidden bg-white">
+                  <img
+                    src="/assets/images/rafay.jpeg"
+                    alt="Rafay"
+                    className="w-full h-full object-cover"
+                  />
+                </div>
+                <div className="absolute -bottom-2 -left-2 bg-blue-400 text-white p-1 rounded-full shadow-lg">
+                  <Sparkles size={16} />
+                </div>
+              </motion.div>
+            </div>
           </motion.div>
         </header>
 
