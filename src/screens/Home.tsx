@@ -10,7 +10,7 @@ export const Home: React.FC = () => {
   const handleModeClick = (path: string) => {
     // Haptic feedback for mobile
     if (typeof navigator !== "undefined" && navigator.vibrate) {
-      navigator.vibrate(10);
+      navigator.vibrate(20);
     }
 
     // Prime the audio engine with a user gesture
@@ -72,7 +72,7 @@ export const Home: React.FC = () => {
                 animate={{ rotate: [0, 5, -5, 0], y: [0, -5, 0] }}
                 transition={{ repeat: Infinity, duration: 4, ease: "easeInOut" }}
                 className="relative shrink-0 cursor-pointer"
-                onClick={() => navigator.vibrate?.(10)}
+                onClick={() => navigator.vibrate?.(20)}
               >
                 <div className="w-20 h-20 md:w-32 md:h-32 rounded-full border-4 md:border-6 border-white shadow-2xl overflow-hidden bg-white">
                   <img
@@ -99,7 +99,7 @@ export const Home: React.FC = () => {
                 animate={{ rotate: [0, -5, 5, 0], y: [0, -5, 0] }}
                 transition={{ repeat: Infinity, duration: 4, ease: "easeInOut", delay: 0.5 }}
                 className="relative shrink-0 cursor-pointer"
-                onClick={() => navigator.vibrate?.(10)}
+                onClick={() => navigator.vibrate?.(20)}
               >
                 <div className="w-20 h-20 md:w-32 md:h-32 rounded-full border-4 md:border-6 border-white shadow-2xl overflow-hidden bg-white">
                   <img
