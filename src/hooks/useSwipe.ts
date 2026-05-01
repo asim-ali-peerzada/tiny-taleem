@@ -28,8 +28,10 @@ export const useSwipe = ({ onSwipeLeft, onSwipeRight }: SwipeInput) => {
     const isRightSwipe = distance < -minSwipeDistance;
 
     if (isLeftSwipe) {
+      if (typeof navigator !== "undefined" && navigator.vibrate) navigator.vibrate(10);
       onSwipeLeft();
     } else if (isRightSwipe) {
+      if (typeof navigator !== "undefined" && navigator.vibrate) navigator.vibrate(10);
       onSwipeRight();
     }
   };

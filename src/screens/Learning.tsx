@@ -31,6 +31,7 @@ export const Learning: React.FC = () => {
   const currentItem = dataset[currentIndex];
 
   const handlePlaySound = useCallback(() => {
+    if (navigator.vibrate) navigator.vibrate(10);
     console.log("Learning Screen: handlePlaySound triggered");
     setIsSpeaking(true);
     const textToSpeak =
@@ -43,6 +44,7 @@ export const Learning: React.FC = () => {
   }, [currentItem, mode, playSound]);
 
   const handleNext = useCallback(() => {
+    if (navigator.vibrate) navigator.vibrate(10);
     if (currentIndex < dataset.length - 1) {
       setDirection(1);
       setCurrentIndex((prev) => prev + 1);
@@ -52,6 +54,7 @@ export const Learning: React.FC = () => {
   }, [currentIndex, dataset.length]);
 
   const handlePrev = useCallback(() => {
+    if (navigator.vibrate) navigator.vibrate(10);
     if (currentIndex > 0) {
       setDirection(-1);
       setCurrentIndex((prev) => prev - 1);
@@ -67,10 +70,14 @@ export const Learning: React.FC = () => {
     return (
       <Celebration
         onRestart={() => {
+          if (navigator.vibrate) navigator.vibrate(10);
           setIsCompleted(false);
           setCurrentIndex(0);
         }}
-        onHome={() => navigate("/")}
+        onHome={() => {
+          if (navigator.vibrate) navigator.vibrate(10);
+          navigate("/");
+        }}
       />
     );
   }
@@ -87,7 +94,10 @@ export const Learning: React.FC = () => {
         <motion.button
           whileHover={{ scale: 1.1, rotate: -5 }}
           whileTap={{ scale: 0.9, rotate: 0 }}
-          onClick={() => navigate("/")}
+          onClick={() => {
+            if (navigator.vibrate) navigator.vibrate(10);
+            navigate("/");
+          }}
           className="w-14 h-14 md:w-20 md:h-20 rounded-2xl md:rounded-[28px] bg-white shadow-[0_6px_0_#E2E8F0] md:shadow-[0_10px_0_#E2E8F0] flex items-center justify-center text-gray-700 border-2 border-gray-100"
         >
           <Home size={28} className="md:w-9 md:h-9" strokeWidth={3} />
@@ -181,6 +191,7 @@ export const Learning: React.FC = () => {
             whileHover={{ scale: 1.1, rotate: -180 }}
             whileTap={{ scale: 0.9 }}
             onClick={() => {
+              if (navigator.vibrate) navigator.vibrate(10);
               setDirection(-1);
               setCurrentIndex(0);
             }}
