@@ -3,6 +3,7 @@ import { Cloud, Sparkles, Sun } from "lucide-react";
 import React from "react";
 import { useNavigate } from "react-router-dom";
 import { ModeCard } from "../components/ModeCard";
+import { WeatherWidget } from "../components/WeatherWidget";
 
 export const Home: React.FC = () => {
   const navigate = useNavigate();
@@ -51,7 +52,11 @@ export const Home: React.FC = () => {
         <Sun size={300} />
       </motion.div>
 
-      <div className="max-w-4xl mx-auto px-6 py-6 md:py-12 relative z-10">
+      <div className="max-w-4xl mx-auto px-6 pt-4 pb-6 md:py-12 relative z-10">
+        <div className="flex justify-end md:justify-center mb-6">
+          <WeatherWidget />
+        </div>
+
         <header className="text-center mb-8 md:mb-16">
           <motion.div
             initial={{ scale: 0.5, opacity: 0 }}
@@ -70,7 +75,11 @@ export const Home: React.FC = () => {
             <div className="flex flex-col md:flex-row items-center justify-center gap-4 md:gap-8 px-4">
               <motion.div
                 animate={{ rotate: [0, 5, -5, 0], y: [0, -5, 0] }}
-                transition={{ repeat: Infinity, duration: 4, ease: "easeInOut" }}
+                transition={{
+                  repeat: Infinity,
+                  duration: 4,
+                  ease: "easeInOut",
+                }}
                 className="relative shrink-0 cursor-pointer"
                 onClick={() => navigator.vibrate?.(20)}
               >
@@ -97,7 +106,12 @@ export const Home: React.FC = () => {
 
               <motion.div
                 animate={{ rotate: [0, -5, 5, 0], y: [0, -5, 0] }}
-                transition={{ repeat: Infinity, duration: 4, ease: "easeInOut", delay: 0.5 }}
+                transition={{
+                  repeat: Infinity,
+                  duration: 4,
+                  ease: "easeInOut",
+                  delay: 0.5,
+                }}
                 className="relative shrink-0 cursor-pointer"
                 onClick={() => navigator.vibrate?.(20)}
               >

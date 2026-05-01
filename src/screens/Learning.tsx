@@ -1,6 +1,6 @@
 import { AnimatePresence, motion } from "framer-motion";
 import { ArrowLeft, ArrowRight, Home, RotateCcw, Volume2 } from "lucide-react";
-import React, { useCallback, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { Celebration } from "../components/Celebration";
 import { LearningCard } from "../components/LearningCard";
@@ -71,6 +71,21 @@ export const Learning: React.FC = () => {
     onSwipeLeft: handleNext,
     onSwipeRight: handlePrev,
   });
+
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "ArrowLeft") {
+        handlePrev();
+      } else if (e.key === "ArrowRight") {
+        handleNext();
+      } else if (e.key === "Enter" || e.key === " ") {
+        handlePlaySound();
+      }
+    };
+
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [handleNext, handlePrev, handlePlaySound]);
 
   if (isCompleted) {
     return (
