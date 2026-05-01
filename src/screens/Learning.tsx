@@ -30,7 +30,13 @@ export const Learning: React.FC = () => {
 
   const currentItem = dataset[currentIndex];
 
+  const lastPlayTime = React.useRef<number>(0);
+
   const handlePlaySound = useCallback(() => {
+    const now = Date.now();
+    if (now - lastPlayTime.current < 1500) return;
+    lastPlayTime.current = now;
+
     if (navigator.vibrate) navigator.vibrate(20);
     console.log("Learning Screen: handlePlaySound triggered");
     setIsSpeaking(true);
