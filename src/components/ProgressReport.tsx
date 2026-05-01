@@ -177,11 +177,13 @@ interface Item {
 interface ProgressReportProps {
   items: Item[];
   mode: string;
+  userName: string;
 }
 
 export const ProgressReport: React.FC<ProgressReportProps> = ({
   items,
   mode,
+  userName,
 }) => {
   const baseUrl = globalThis.location?.origin || "http://localhost:5173";
   const heartImg = "https://img.icons8.com/emoji/48/heart-suit.png";
@@ -225,13 +227,18 @@ export const ProgressReport: React.FC<ProgressReportProps> = ({
           <View style={styles.innerBorder} />
 
           <View style={styles.header}>
-            <Text style={styles.hurrah}>HURRAH! You Did It!</Text>
+            <Text style={styles.hurrah}>HURRAH! {userName.toUpperCase()} Did It!</Text>
             <Text style={styles.title}>Certificate of Achievement</Text>
             <Text style={styles.subtitle}>TinyTaleem Learning Academy</Text>
           </View>
 
+          <View style={{ marginBottom: 15, alignItems: 'center' }}>
+            <Text style={{ fontSize: 10, color: '#64748B', textTransform: 'uppercase', marginBottom: 5 }}>This is to certify that</Text>
+            <Text style={{ fontSize: 24, fontFamily: 'Helvetica-Bold', color: '#7C3AED', textTransform: 'capitalize' }}>{userName}</Text>
+          </View>
+
           <Text style={styles.awardText}>
-            This certificate is proudly awarded for successfully mastering the
+            has successfully mastered the
             {modeLabel}
             lessons. Your hard work and dedication have earned you the rank of
             Superstar!

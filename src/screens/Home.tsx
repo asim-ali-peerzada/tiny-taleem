@@ -1,12 +1,29 @@
-import { motion } from "framer-motion";
-import { Cloud, Sparkles, Sun } from "lucide-react";
-import React from "react";
+import { AnimatePresence, motion } from "framer-motion";
+import { Cloud, PartyPopper, Sparkles, Sun } from "lucide-react";
+import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { ModeCard } from "../components/ModeCard";
 import { WeatherWidget } from "../components/WeatherWidget";
+import { useUser } from "../hooks/useUser";
 
 export const Home: React.FC = () => {
   const navigate = useNavigate();
+  const { userName, saveName, hasName } = useUser();
+  const [tempName, setTempName] = useState("");
+  const [showModal, setShowModal] = useState(!hasName);
+
+  const handleNameSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    if (tempName.trim()) {
+      saveName(tempName.trim());
+      setShowModal(false);
+
+      // Joyful haptic feedback
+      if (typeof navigator !== "undefined" && navigator.vibrate) {
+        navigator.vibrate([30, 50, 30]);
+      }
+    }
+  };
 
   const handleModeClick = (path: string) => {
     // Haptic feedback for mobile
@@ -26,7 +43,56 @@ export const Home: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-linear-to-b from-[#E0F2FE] via-[#F0F9FF] to-[#FFF] relative">
+    <div className="min-h-screen bg-linear-to-b from-[#E0F2FE] via-[#F0F9FF] to-[#FFF] relative overflow-hidden">
+      <AnimatePresence>
+        {(showModal || !hasName) && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-50 flex items-center justify-center p-6 bg-blue-900/40 backdrop-blur-md"
+          >
+            <motion.div
+              initial={{ scale: 0.8, y: 20 }}
+              animate={{ scale: 1, y: 0 }}
+              className="bg-white rounded-4xl p-8 md:p-12 shadow-2xl max-w-md w-full border-8 border-blue-100 text-center relative"
+            >
+              <div className="absolute -top-12 left-1/2 -translate-x-1/2 bg-yellow-400 p-4 rounded-full shadow-lg border-4 border-white">
+                <PartyPopper size={40} className="text-white" />
+              </div>
+
+              <h2 className="text-3xl md:text-4xl font-black font-rounded text-blue-600 mb-2 mt-4">
+                Hello, Friend!
+              </h2>
+              <p className="text-gray-500 font-bold mb-8">
+                What should we call you?
+              </p>
+
+              <form onSubmit={handleNameSubmit}>
+                <input
+                  autoFocus
+                  type="text"
+                  maxLength={30}
+                  value={tempName}
+                  onChange={(e) => setTempName(e.target.value)}
+                  placeholder="Enter your name..."
+                  className="w-full px-6 py-4 rounded-2xl bg-gray-50 border-4 border-gray-100 focus:border-blue-400 focus:outline-none text-xl font-bold text-center mb-6 transition-all"
+                />
+
+                <motion.button
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                  disabled={!tempName.trim()}
+                  className="w-full bg-blue-500 hover:bg-blue-600 disabled:bg-gray-300 text-white font-black py-4 rounded-2xl text-xl shadow-xl shadow-blue-200 transition-colors"
+                >
+                  Let's Play!
+                </motion.button>
+              </form>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
       {/* Dynamic Background Elements */}
       <motion.div
         animate={{ x: [-20, 20, -20], y: [-10, 10, -10] }}
@@ -64,6 +130,18 @@ export const Home: React.FC = () => {
             transition={{ type: "spring", stiffness: 100 }}
             className="inline-block relative w-full"
           >
+            {hasName && (
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="mb-4"
+              >
+                <span className="inline-block px-6 py-2 bg-yellow-400 text-white rounded-full font-black text-lg shadow-lg border-2 border-white">
+                  Welcome back, {userName}! 👋
+                </span>
+              </motion.div>
+            )}
+
             <motion.div
               animate={{ y: [0, -15, 0], rotate: [0, 10, -10, 0] }}
               transition={{ repeat: Infinity, duration: 3, ease: "easeInOut" }}

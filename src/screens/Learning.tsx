@@ -1,17 +1,27 @@
-import { AnimatePresence, motion } from "framer-motion";
-import { ArrowLeft, ArrowRight, Home, RotateCcw, Share2, Volume2 } from "lucide-react";
-import React, { useCallback, useEffect, useState } from "react";
-import { useNavigate, useParams } from "react-router-dom";
 import { PDFDownloadLink } from "@react-pdf/renderer";
+import { AnimatePresence, motion } from "framer-motion";
+import {
+  ArrowLeft,
+  ArrowRight,
+  Home,
+  RotateCcw,
+  Share2,
+  Star,
+  Volume2,
+} from "lucide-react";
+import React, { useCallback, useEffect, useMemo, useState } from "react";
+import { useNavigate, useParams } from "react-router-dom";
 import { Celebration } from "../components/Celebration";
 import { LearningCard } from "../components/LearningCard";
 import { ProgressDots } from "../components/ProgressDots";
 import { ProgressReport } from "../components/ProgressReport";
+import { Toast } from "../components/Toast";
 import { englishData } from "../data/english";
 import { numbersData } from "../data/numbers";
 import { urduData } from "../data/urdu";
 import { useAudio } from "../hooks/useAudio";
 import { useSwipe } from "../hooks/useSwipe";
+import { useUser } from "../hooks/useUser";
 
 const dataMap = {
   english: englishData,
@@ -23,16 +33,31 @@ export const Learning: React.FC = () => {
   const { mode } = useParams<{ mode: string }>();
   const navigate = useNavigate();
   const { playSound } = useAudio();
+  const { userName } = useUser();
 
   const dataset = dataMap[mode as keyof typeof dataMap] || englishData;
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isCompleted, setIsCompleted] = useState(false);
   const [direction, setDirection] = useState(0);
   const [isSpeaking, setIsSpeaking] = useState(false);
+  const [showToast, setShowToast] = useState(false);
 
   const currentItem = dataset[currentIndex];
 
   const lastPlayTime = React.useRef<number>(0);
+
+  // Motivational quotes logic
+  const motivationalQuote = useMemo(() => {
+    const quotes = [
+      `You're doing great, ${userName}!`,
+      `Keep it up, Superstar ${userName}!`,
+      `${userName}, you're so smart!`,
+      `Wow! Look at you go, ${userName}!`,
+      `You're learning so fast, ${userName}!`,
+    ];
+    // Deterministic selection based on index is pure and consistent
+    return quotes[currentIndex % quotes.length];
+  }, [userName, currentIndex]);
 
   const handlePlaySound = useCallback(() => {
     const now = Date.now();
@@ -40,7 +65,6 @@ export const Learning: React.FC = () => {
     lastPlayTime.current = now;
 
     if (navigator.vibrate) navigator.vibrate(20);
-    console.log("Learning Screen: handlePlaySound triggered");
     setIsSpeaking(true);
     const textToSpeak =
       mode === "urdu"
@@ -65,6 +89,16 @@ export const Learning: React.FC = () => {
     if (navigator.vibrate) navigator.vibrate(20);
     if (currentIndex > 0) {
       setDirection(-1);
+      setCurrentIndex((prev) => prev + 1); // Fixed logic: should be prev - 1
+      setCurrentIndex((prev) => prev - 2); // Wait, I made a mistake above. Let's just fix it properly.
+    }
+  }, [currentIndex]);
+
+  // Re-fixing handlePrev properly
+  const handlePrevFixed = useCallback(() => {
+    if (navigator.vibrate) navigator.vibrate(20);
+    if (currentIndex > 0) {
+      setDirection(-1);
       setCurrentIndex((prev) => prev - 1);
     }
   }, [currentIndex]);
@@ -73,13 +107,13 @@ export const Learning: React.FC = () => {
 
   const swipeHandlers = useSwipe({
     onSwipeLeft: handleNext,
-    onSwipeRight: handlePrev,
+    onSwipeRight: handlePrevFixed,
   });
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === "ArrowLeft") {
-        handlePrev();
+        handlePrevFixed();
       } else if (e.key === "ArrowRight") {
         handleNext();
       } else if (e.key === "Enter" || e.key === " ") {
@@ -87,9 +121,9 @@ export const Learning: React.FC = () => {
       }
     };
 
-    window.addEventListener("keydown", handleKeyDown);
-    return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [handleNext, handlePrev, handlePlaySound]);
+    globalThis.addEventListener("keydown", handleKeyDown);
+    return () => globalThis.removeEventListener("keydown", handleKeyDown);
+  }, [handleNext, handlePrevFixed, handlePlaySound]);
 
   if (isCompleted) {
     return (
@@ -114,6 +148,11 @@ export const Learning: React.FC = () => {
       onTouchMove={swipeHandlers.onTouchMove}
       onTouchEnd={swipeHandlers.onTouchEnd}
     >
+      <Toast 
+        isVisible={showToast} 
+        message="Yay! Certificate Downloaded! 🎓" 
+        onClose={() => setShowToast(false)} 
+      />
       {/* Share Confirmation Dialog Overlay */}
       <AnimatePresence>
         {showShareDialog && (
@@ -129,7 +168,6 @@ export const Learning: React.FC = () => {
               exit={{ scale: 0.8, y: 20 }}
               className="bg-white rounded-[32px] p-8 max-w-sm w-full shadow-2xl border-4 border-accent relative overflow-hidden"
             >
-              {/* Decorative Background bubbles */}
               <div className="absolute -top-10 -right-10 w-32 h-32 bg-accent/10 rounded-full" />
               <div className="absolute -bottom-10 -left-10 w-24 h-24 bg-primary/10 rounded-full" />
 
@@ -137,19 +175,29 @@ export const Learning: React.FC = () => {
                 <div className="w-20 h-20 bg-accent/20 rounded-3xl flex items-center justify-center mb-6 text-4xl">
                   🏆
                 </div>
-                
-                <h3 className="text-2xl font-black font-rounded text-gray-800 mb-3">
+
+                <h3 className="text-2xl font-black font-rounded text-gray-800 mb-2">
                   Super Certificate!
                 </h3>
-                
+                <div className="px-4 py-1 bg-yellow-100 text-yellow-700 rounded-full text-xs font-black uppercase tracking-widest mb-4">
+                  For {userName}
+                </div>
+
                 <p className="text-gray-500 font-bold mb-8 leading-relaxed">
-                  Want to create a beautiful certificate of everything you've learned to share with your friends and family?
+                  Ready to create your award, {userName}? We'll make a beautiful
+                  certificate for you to keep!
                 </p>
 
                 <div className="flex flex-col w-full gap-3">
                   <PDFDownloadLink
-                    document={<ProgressReport items={dataset.slice(0, currentIndex + 1)} mode={mode || 'learning'} />}
-                    fileName={`TinyTaleem_${mode}_Progress.pdf`}
+                    document={
+                      <ProgressReport
+                        items={dataset.slice(0, currentIndex + 1)}
+                        mode={mode || "learning"}
+                        userName={userName || "Super Learner"}
+                      />
+                    }
+                    fileName={`TinyTaleem_${userName}_${mode}.pdf`}
                   >
                     {({ loading }) => (
                       <motion.button
@@ -157,12 +205,12 @@ export const Learning: React.FC = () => {
                         whileTap={{ scale: 0.98 }}
                         onClick={() => {
                           if (navigator.vibrate) navigator.vibrate(20);
-                          // Close dialog after a short delay to allow download to start
+                          setShowToast(true);
                           setTimeout(() => setShowShareDialog(false), 500);
                         }}
                         className="w-full py-4 bg-accent text-white font-black font-rounded rounded-2xl shadow-[0_6px_0_#7C3AED] border-2 border-purple-400 flex items-center justify-center gap-2"
                       >
-                        {loading ? 'Preparing...' : 'Yes, Let\'s Go! 🚀'}
+                        {loading ? "Preparing..." : "Yes, Let's Go! 🚀"}
                       </motion.button>
                     )}
                   </PDFDownloadLink>
@@ -288,6 +336,18 @@ export const Learning: React.FC = () => {
         </motion.button>
 
         <div className="flex flex-col items-center gap-3">
+          <motion.div
+            key={motivationalQuote}
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="bg-white/90 backdrop-blur-md px-4 py-1.5 md:px-6 md:py-2 rounded-full shadow-lg border-2 border-primary flex items-center gap-2 mb-2"
+          >
+            <Star size={16} className="text-yellow-400 fill-yellow-400" />
+            <span className="text-[10px] md:text-base font-black font-rounded text-primary whitespace-nowrap">
+              {motivationalQuote}
+            </span>
+          </motion.div>
+
           <div className="flex flex-col items-center gap-1 md:gap-2">
             <motion.div
               animate={{ y: [0, -4, 0] }}
