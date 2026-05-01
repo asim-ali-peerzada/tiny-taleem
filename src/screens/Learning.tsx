@@ -1,10 +1,12 @@
 import { AnimatePresence, motion } from "framer-motion";
-import { ArrowLeft, ArrowRight, Home, RotateCcw, Volume2 } from "lucide-react";
+import { ArrowLeft, ArrowRight, Home, RotateCcw, Share2, Volume2 } from "lucide-react";
 import React, { useCallback, useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
+import { PDFDownloadLink } from "@react-pdf/renderer";
 import { Celebration } from "../components/Celebration";
 import { LearningCard } from "../components/LearningCard";
 import { ProgressDots } from "../components/ProgressDots";
+import { ProgressReport } from "../components/ProgressReport";
 import { englishData } from "../data/english";
 import { numbersData } from "../data/numbers";
 import { urduData } from "../data/urdu";
@@ -67,6 +69,8 @@ export const Learning: React.FC = () => {
     }
   }, [currentIndex]);
 
+  const [showShareDialog, setShowShareDialog] = useState(false);
+
   const swipeHandlers = useSwipe({
     onSwipeLeft: handleNext,
     onSwipeRight: handlePrev,
@@ -110,19 +114,105 @@ export const Learning: React.FC = () => {
       onTouchMove={swipeHandlers.onTouchMove}
       onTouchEnd={swipeHandlers.onTouchEnd}
     >
+      {/* Share Confirmation Dialog Overlay */}
+      <AnimatePresence>
+        {showShareDialog && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-50 flex items-center justify-center p-6 bg-black/40 backdrop-blur-sm"
+          >
+            <motion.div
+              initial={{ scale: 0.8, y: 20 }}
+              animate={{ scale: 1, y: 0 }}
+              exit={{ scale: 0.8, y: 20 }}
+              className="bg-white rounded-[32px] p-8 max-w-sm w-full shadow-2xl border-4 border-accent relative overflow-hidden"
+            >
+              {/* Decorative Background bubbles */}
+              <div className="absolute -top-10 -right-10 w-32 h-32 bg-accent/10 rounded-full" />
+              <div className="absolute -bottom-10 -left-10 w-24 h-24 bg-primary/10 rounded-full" />
+
+              <div className="relative z-10 flex flex-col items-center text-center">
+                <div className="w-20 h-20 bg-accent/20 rounded-3xl flex items-center justify-center mb-6 text-4xl">
+                  🏆
+                </div>
+                
+                <h3 className="text-2xl font-black font-rounded text-gray-800 mb-3">
+                  Super Certificate!
+                </h3>
+                
+                <p className="text-gray-500 font-bold mb-8 leading-relaxed">
+                  Want to create a beautiful certificate of everything you've learned to share with your friends and family?
+                </p>
+
+                <div className="flex flex-col w-full gap-3">
+                  <PDFDownloadLink
+                    document={<ProgressReport items={dataset.slice(0, currentIndex + 1)} mode={mode || 'learning'} />}
+                    fileName={`TinyTaleem_${mode}_Progress.pdf`}
+                  >
+                    {({ loading }) => (
+                      <motion.button
+                        whileHover={{ scale: 1.02 }}
+                        whileTap={{ scale: 0.98 }}
+                        onClick={() => {
+                          if (navigator.vibrate) navigator.vibrate(20);
+                          // Close dialog after a short delay to allow download to start
+                          setTimeout(() => setShowShareDialog(false), 500);
+                        }}
+                        className="w-full py-4 bg-accent text-white font-black font-rounded rounded-2xl shadow-[0_6px_0_#7C3AED] border-2 border-purple-400 flex items-center justify-center gap-2"
+                      >
+                        {loading ? 'Preparing...' : 'Yes, Let\'s Go! 🚀'}
+                      </motion.button>
+                    )}
+                  </PDFDownloadLink>
+
+                  <motion.button
+                    whileHover={{ scale: 1.02 }}
+                    whileTap={{ scale: 0.98 }}
+                    onClick={() => {
+                      if (navigator.vibrate) navigator.vibrate(10);
+                      setShowShareDialog(false);
+                    }}
+                    className="w-full py-3 bg-gray-100 text-gray-500 font-bold font-rounded rounded-2xl hover:bg-gray-200 transition-colors"
+                  >
+                    Not Now
+                  </motion.button>
+                </div>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
       {/* Top Navigation Bar - Safe area aware */}
       <div className="h-[100px] md:h-[140px] pt-4 md:pt-8 flex items-center justify-between px-4 md:px-8 z-30 shrink-0">
-        <motion.button
-          whileHover={{ scale: 1.1, rotate: -5 }}
-          whileTap={{ scale: 0.9, rotate: 0 }}
-          onClick={() => {
-            if (navigator.vibrate) navigator.vibrate(20);
-            navigate("/");
-          }}
-          className="w-14 h-14 md:w-20 md:h-20 rounded-2xl md:rounded-[28px] bg-white shadow-[0_6px_0_#E2E8F0] md:shadow-[0_10px_0_#E2E8F0] flex items-center justify-center text-gray-700 border-2 border-gray-100"
-        >
-          <Home size={28} className="md:w-9 md:h-9" strokeWidth={3} />
-        </motion.button>
+        <div className="flex items-center gap-3">
+          <motion.button
+            whileHover={{ scale: 1.1, rotate: -5 }}
+            whileTap={{ scale: 0.9, rotate: 0 }}
+            onClick={() => {
+              if (navigator.vibrate) navigator.vibrate(20);
+              navigate("/");
+            }}
+            className="w-14 h-14 md:w-20 md:h-20 rounded-2xl md:rounded-[28px] bg-white shadow-[0_6px_0_#E2E8F0] md:shadow-[0_10px_0_#E2E8F0] flex items-center justify-center text-gray-700 border-2 border-gray-100"
+          >
+            <Home size={28} className="md:w-9 md:h-9" strokeWidth={3} />
+          </motion.button>
+
+          <motion.button
+            whileHover={{ scale: 1.1, rotate: 5 }}
+            whileTap={{ scale: 0.9 }}
+            onClick={() => {
+              if (navigator.vibrate) navigator.vibrate(20);
+              setShowShareDialog(true);
+            }}
+            className="w-14 h-14 md:w-20 md:h-20 rounded-2xl md:rounded-[28px] bg-accent text-white shadow-[0_6px_0_#7C3AED] md:shadow-[0_10px_0_#7C3AED] flex items-center justify-center border-2 border-purple-400"
+            title="Share Progress Report"
+          >
+            <Share2 size={28} className="md:w-9 md:h-9" strokeWidth={3} />
+          </motion.button>
+        </div>
 
         <div className="flex flex-col items-center gap-4 md:gap-6">
           <div className="bg-white/90 backdrop-blur-md px-4 md:px-8 py-2 md:py-3 rounded-2xl md:rounded-3xl shadow-xl border-2 border-white flex items-center gap-2 md:gap-4">
