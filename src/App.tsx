@@ -1,13 +1,13 @@
-import { BrowserRouter } from "react-router-dom";
+import { HashRouter } from "react-router-dom";
 import { AppRoutes } from "./routes/AppRoutes";
 
 function App() {
   return (
-    <BrowserRouter>
+    <HashRouter>
       <div className="min-h-screen w-full">
         <AppRoutes />
       </div>
-    </BrowserRouter>
+    </HashRouter>
   );
 }
 
